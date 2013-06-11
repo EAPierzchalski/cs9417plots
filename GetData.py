@@ -5,7 +5,8 @@ import re
 
 sim_data_dir = os.path.join('C:\\Users', 'Pierzchalski', 'IdeaProjects', 'trafficLightRL', 'out', 'sim')
 
-def paramsFileToKey(index, withSeed = False):
+
+def paramsFileToKey(index, withSeed=False):
     """
 
     :param index: sim index
@@ -14,7 +15,8 @@ def paramsFileToKey(index, withSeed = False):
     """
     return tuple(sorted(paramsFileToDict(index, withSeed=withSeed).items()))
 
-def paramsFileToDict(index, withSeed = False):
+
+def paramsFileToDict(index, withSeed=False):
     """
 
     :param index: sim index
@@ -25,11 +27,12 @@ def paramsFileToDict(index, withSeed = False):
     paramPattern = re.compile('^\s*(.+?)\s*:\s*(.+?)$')
     lines = myFile.readlines()
     myFile.close()
-    lines = [line for line in filter(lambda s: re.match(paramPattern, s) is not None, lines) ]
-    matches = [ re.match(paramPattern, line) for line in lines ]
-    kv = { match.group(1): match.group(2) for match in matches }
+    lines = [line for line in filter(lambda s: re.match(paramPattern, s) is not None, lines)]
+    matches = [re.match(paramPattern, line) for line in lines]
+    kv = {match.group(1): match.group(2) for match in matches}
     if not withSeed: kv.pop('seed')
     return kv
+
 
 def scores(index):
     """
@@ -41,20 +44,25 @@ def scores(index):
     scorePattern = re.compile('(-?[\d]+)\)$')
     lines = file.readlines()
     file.close()
-    scores = [ int(re.search(scorePattern, line).group(1)) for line in lines ]
+    scores = [int(re.search(scorePattern, line).group(1)) for line in lines]
     return scores
 
+
 def paramsFileDir(index):
-    return os.path.join(sim_data_dir, 'data%d'%index, 'params.txt')
+    return os.path.join(sim_data_dir, 'data%d' % index, 'params.txt')
+
 
 def getParamsFile(index):
     return open(paramsFileDir(index), 'r')
 
+
 def scoresFileDir(index):
-    return os.path.join(sim_data_dir, 'data%d'%index, 'scores.txt')
+    return os.path.join(sim_data_dir, 'data%d' % index, 'scores.txt')
+
 
 def getScoresFile(index):
     return open(scoresFileDir(index), 'r')
+
 
 def paramsToIndexesDict(maxIndex):
     paramIndexes = dict()
@@ -64,6 +72,7 @@ def paramsToIndexesDict(maxIndex):
         paramIndexes[params] += [index]
     return paramIndexes
 
+
 def paramsToDicts(maxIndex):
     paramDicts = dict()
     for index in range(0, maxIndex):
@@ -71,6 +80,7 @@ def paramsToDicts(maxIndex):
         paramsDict = paramsFileToDict(index)
         paramDicts[paramsKey] = paramsDict
     return paramDicts
+
 
 def paramString(param):
     name = re.sub('\'', '', re.sub('\\.', '_', str(param)))
