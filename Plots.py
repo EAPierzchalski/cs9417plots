@@ -18,12 +18,12 @@ def plotFn(params, figureIndex, fn, save=True, saveName="plot", show=False):
     fn(indexes)
     if save:
         plotDir = os.path.join(plotsDir, 'plot%d' % figureIndex)
-        if not os.path.exists(plotDir): os.mkdir(plotDir)
+        if not os.path.exists(plotDir): os.makedirs(plotDir)
         pp.savefig(os.path.join(plotDir, saveName))
     if show: pp.show()
 
 
-def copyParams(figureIndex, paramsList):
+def copyReplaceParams(figureIndex, paramsList):
     plotDir = os.path.join(plotsDir, 'plot%d' % figureIndex)
     for f in os.listdir(plotDir):
         if f.endswith('.txt'):
@@ -42,21 +42,10 @@ def setTitleAndAxes(plotIndex, title, xLabel, yLabel):
 
 def fnScores(indexes):
     for index in indexes:
-        pp.plot(gd.scores(index), linestyle=':', marker='x')
+        pp.plot(gd.assessmentScores(index), linestyle=':', marker='x')
 
 
 def fnPointwiseAverage(indexes):
-    scores = np.array([gd.scores(index) for index in indexes])
+    scores = np.array([gd.assessmentScores(index) for index in indexes])
     averages = np.mean(scores, 0)
     pp.plot(averages, linestyle=':', marker='x')
-
-
-p0 = gd.paramsFileToKey(0)
-p1 = gd.paramsFileToKey(10)
-p2 = gd.paramsFileToKey(20)
-p3 = gd.paramsFileToKey(30)
-
-setTitleAndAxes(0, "Comparison of Traffic Generators", "Score Index", "Score")
-plotFn(p0, 0, fnPointwiseAverage)
-plotFn(p1, 0, fnPointwiseAverage)
-copyParams(0, [p0, p1])

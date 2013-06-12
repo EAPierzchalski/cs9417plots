@@ -34,16 +34,16 @@ def paramsFileToDict(index, withSeed=False):
     return kv
 
 
-def scores(index):
+def assessmentScores(index):
     """
 
     :param index: index of the sim
     :return: an array of ints indicating the score of the sim every number of time steps
     """
-    file = getScoresFile(index)
+    myFile = getAssessmentScoresFile(index)
     scorePattern = re.compile('(-?[\d]+)\)$')
-    lines = file.readlines()
-    file.close()
+    lines = myFile.readlines()
+    myFile.close()
     scores = [int(re.search(scorePattern, line).group(1)) for line in lines]
     return scores
 
@@ -56,12 +56,20 @@ def getParamsFile(index):
     return open(paramsFileDir(index), 'r')
 
 
-def scoresFileDir(index):
-    return os.path.join(sim_data_dir, 'data%d' % index, 'scores.txt')
+def assessmentScoresFileDir(index):
+    return os.path.join(sim_data_dir, 'data%d' % index, 'assessmentScores.txt')
 
 
-def getScoresFile(index):
-    return open(scoresFileDir(index), 'r')
+def trainingScoresFileDir(index):
+    return os.path.join(sim_data_dir, 'data%d' % index, 'learningScores.txt')
+
+
+def getAssessmentScoresFile(index):
+    return open(assessmentScoresFileDir(index), 'r')
+
+
+def getTrainingScoresFile(index):
+    return open(trainingScoresFileDir(index), 'r')
 
 
 def paramsToIndexesDict(maxIndex):
