@@ -47,6 +47,19 @@ def assessmentScores(index):
     scores = [int(re.search(scorePattern, line).group(1)) for line in lines]
     return scores
 
+def trainingScores(index):
+    """
+
+    :param index: index of the sim
+    :return: an array of ints indicating the score of the sim every number of time steps
+    """
+    myFile = getTrainingScoresFile(index)
+    scorePattern = re.compile('(-?[\d]+)\)$')
+    lines = myFile.readlines()
+    myFile.close()
+    scores = [int(re.search(scorePattern, line).group(1)) for line in lines]
+    return scores
+
 
 def paramsFileDir(index):
     return os.path.join(sim_data_dir, 'data%d' % index, 'params.txt')
@@ -72,18 +85,18 @@ def getTrainingScoresFile(index):
     return open(trainingScoresFileDir(index), 'r')
 
 
-def paramsToIndexesDict(maxIndex):
+def paramsToIndexesDict(maxIndex, minIndex=0):
     paramIndexes = dict()
-    for index in range(0, maxIndex):
+    for index in range(minIndex, maxIndex):
         params = paramsFileToKey(index)
         if params not in paramIndexes: paramIndexes[params] = []
         paramIndexes[params] += [index]
     return paramIndexes
 
 
-def paramsToDicts(maxIndex):
+def paramsToDicts(maxIndex, minIndex=0):
     paramDicts = dict()
-    for index in range(0, maxIndex):
+    for index in range(minIndex, maxIndex):
         paramsKey = paramsFileToKey(index)
         paramsDict = paramsFileToDict(index)
         paramDicts[paramsKey] = paramsDict

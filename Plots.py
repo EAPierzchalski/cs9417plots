@@ -6,7 +6,7 @@ import numpy as np
 import os
 import shutil
 
-maxIndex = 100
+maxIndex = 720
 paramsToIndexes = gd.paramsToIndexesDict(maxIndex)
 paramsToDicts = gd.paramsToDicts(maxIndex)
 plotsDir = os.path.join('C:\\Users', 'Pierzchalski', 'IdeaProjects', 'trafficLightRL', 'out', 'plots')
@@ -40,12 +40,63 @@ def setTitleAndAxes(plotIndex, title, xLabel, yLabel):
     pp.ylabel(yLabel)
 
 
-def fnScores(indexes):
-    for index in indexes:
-        pp.plot(gd.assessmentScores(index), linestyle=':', marker='x')
+def insertLegend(figureIndex, save=True, saveName="plot", loc='lower right'):
+    pp.figure(figureIndex)
+    pp.legend(loc=loc)
+    if save:
+        plotDir = os.path.join(plotsDir, 'plot%d' % figureIndex)
+        if not os.path.exists(plotDir): os.makedirs(plotDir)
+        pp.savefig(os.path.join(plotDir, saveName))
 
 
-def fnPointwiseAverage(indexes):
-    scores = np.array([gd.assessmentScores(index) for index in indexes])
-    averages = np.mean(scores, 0)
-    pp.plot(averages, linestyle=':', marker='x')
+def fnScores(legendLabel, assessment=True):
+    def fn(indexes):
+        for index in indexes:
+            if assessment:
+                scores = gd.assessmentScores(index)
+            else:
+                scores = gd.trainingScores(index)
+            pp.plot(scores, linestyle=':', marker='x', label=legendLabel)
+    return lambda indexes: fn(indexes)
+
+
+def fnPointwiseAverage(legendLabel, assessment=True):
+    def fn(indexes):
+        scores = []
+        for index in indexes:
+            if assessment:
+                scores += [gd.assessmentScores(index)]
+            else:
+                scores += [gd.trainingScores(index)]
+        scores = np.array(scores)
+        averages = np.mean(scores, 0)
+        pp.plot(averages, linestyle=':', marker='x', label=legendLabel)
+    return lambda indexes: fn(indexes)
+
+
+def fnErrorBar(legendLabel, assessment=True):
+    def fn(indexes):
+        scores = []
+        for index in indexes:
+            if assessment:
+                scores += [gd.assessmentScores(index)]
+            else:
+                scores += [gd.trainingScores(index)]
+        scores = np.array(scores)
+        meanScores = np.mean(scores, 0)
+        highErrors = np.max(scores, 0) - meanScores
+        lowErrors = meanScores - np.min(scores, 0)
+        pp.errorbar(x=[i for i in range(0, len(meanScores))], y=meanScores, yerr=[lowErrors, highErrors], label=legendLabel)
+    return lambda indexes: fn(indexes)
+
+# def fnBarPlot(assessment=True):
+#     def fn(indexes):
+#         scores = []
+#         for index in indexes:
+#             if assessment:
+#                 scores += [gd.assessmentScores(index)]
+#             else:
+#                 scores += [gd.trainingScores(index)]
+#         scores = np.array(scores)
+#         pp.boxplot(scores)
+#     return lambda indexes: fn(indexes)
